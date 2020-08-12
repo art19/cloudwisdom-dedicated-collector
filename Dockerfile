@@ -7,17 +7,17 @@ FROM      centos:6
 # environment variable defaults
 ENV APIKEY apikey
 ENV APIHOST api.app.netuitive.com
-ENV INTERVAL 60
 ENV DOCKER_HOSTNAME docker-hostname
-ENV LOGLEVEL INFO
-ENV HTTPVAR https
-ENV LIP "0.0.0.0"
-ENV LPRT 8125
-ENV FIP "127.0.0.2"
-ENV FPRT 8125
-ENV FORWARD "False"
-ENV TAGS ""
 ENV ELEMENT_TYPE "SERVER"
+ENV FIP "127.0.0.2"
+ENV FORWARD "False"
+ENV FPRT 8125
+ENV HTTPVAR https
+ENV INTERVAL 60
+ENV LIP "0.0.0.0"
+ENV LOGLEVEL INFO
+ENV LPRT 8125
+ENV TAGS ""
 
 RUN  yum -y update \
   && rpm --import https://repos.app.netuitive.com/RPM-GPG-KEY-netuitive \
