@@ -54,7 +54,7 @@ fi
 for v in `set -o posix; set | sed 's% %:#:%g'`; do
 	if [[ "${v}" == "COLLECTOR_"*  ]]; then
 
-		FILE=`echo "${COLLECTORS}" | grep -i "$(echo "${v}" | sed 's%^COLLECTOR_%%;s%_.*%%' | tr 'A-Z' 'a-z')"`
+		FILE=`echo "${COLLECTORS}" | grep -i "^$(echo "${v}" | sed 's%^COLLECTOR_%%;s%_.*%%' | tr 'A-Z' 'a-z')$"`
 		KEY=`echo "${v}" | sed 's%=.*%%;s%__%##%g;s%.*_%%;s%##%_%g' | tr 'A-Z' 'a-z'`
 		VAL=`echo "${v}" | sed "s%.*=%%;s%[']%%g"`
 
