@@ -71,9 +71,10 @@ test $(grep -c "ElementType" /opt/netuitive-agent/embedded/lib/python2.7/site-pa
      sed -i "s/self.element = netuitive.Element(/self.element = netuitive.Element(\n                ElementType=\"$ELEMENT_TYPE\",/" /opt/netuitive-agent/embedded/lib/python2.7/site-packages/diamond/handler/netuitive_handler.py && \
 		 rm -f /opt/netuitive-agent/embedded/lib/python2.7/site-packages/diamond/handler/netuitive_handler.pyc /opt/netuitive-agent/embedded/lib/python2.7/site-packages/diamond/handler/netuitive_handler.pyo
 
-ln -sf /proc/1/fd/1 /opt/netuitive-agent/log/netuitive-agent.log
-ln -sf /proc/1/fd/1 /opt/netuitive-agent/log/netuitive-statsd.log
-ln -sf /proc/1/fd/1 /opt/netuitive-agent/log/supervisord.log
+# The rotate file hander does not really work with streams
+# ln -sf /proc/1/fd/1 /opt/netuitive-agent/log/netuitive-agent.log
+# ln -sf /proc/1/fd/1 /opt/netuitive-agent/log/netuitive-statsd.log
+# ln -sf /proc/1/fd/1 /opt/netuitive-agent/log/supervisord.log
 
 echo "Starting Services..."
 
