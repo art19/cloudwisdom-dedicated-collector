@@ -17,6 +17,7 @@ ENV FIP "127.0.0.2"
 ENV FPRT 8125
 ENV FORWARD "False"
 ENV TAGS ""
+ENV ELEMENT_TYPE "SERVER"
 
 RUN  yum -y update \
   && rpm --import https://repos.app.netuitive.com/RPM-GPG-KEY-netuitive \
