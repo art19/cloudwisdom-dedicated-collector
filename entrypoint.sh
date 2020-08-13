@@ -53,13 +53,21 @@ fi
 
 # The default Jolokia collector configuration does not define a metrics_whitelist, so the code below couldn't set it
 if [ -n "${COLLECTOR_JOLOKIA_METRICS__WHITELIST}" ]; then
+	echo "" >> /opt/netuitive-agent/conf/collectors/JolokiaCollector.conf
 	echo "metrics_whitelist = ${COLLECTOR_JOLOKIA_METRICS__WHITELIST}" >> /opt/netuitive-agent/conf/collectors/JolokiaCollector.conf
 fi
 
+if [ -n "${COLLECTOR_JOLOKIA_METRICS__BLACKLIST}" ]; then
+	echo "" >> /opt/netuitive-agent/conf/collectors/JolokiaCollector.conf
+	echo "metrics_blacklist = ${COLLECTOR_JOLOKIA_METRICS__BLACKLIST}" >> /opt/netuitive-agent/conf/collectors/JolokiaCollector.conf
+fi
+
 # The default Jolokia collector configuration has no rewrite section
-if [ -n "${COLLECTOR_SECTION_JOLOKIA_REWRITE}" ]; then
-  echo "\n[rewrite]" >> /opt/netuitive-agent/conf/collectors/JolokiaCollector.conf
-  rewrite_rules=($(echo ${COLLECTOR_SECTION_JOLOKIA_REWRITE} | tr "%" "\n"))
+if [ -n "${COLLECTOR_JOLOKIA_SECTION_REWRITE}" ]; then
+  echo "Configuring REWRITE section of the Jolokia collector configuration"
+
+  echo -e "\n[rewrite]" >> /opt/netuitive-agent/conf/collectors/JolokiaCollector.conf
+  rewrite_rules=($(echo ${COLLECTOR_JOLOKIA_SECTION_REWRITE} | tr "%" "\n"))
   for rule in "${rewrite_rules[@]}"; do
     echo "${rule}" >> /opt/netuitive-agent/conf/collectors/JolokiaCollector.conf
   done
