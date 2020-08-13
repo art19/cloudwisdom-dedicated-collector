@@ -51,6 +51,20 @@ if [[ ! $USE_LOCAL_CONFIG ]]; then
 
 fi
 
+# The default Jolokia collector configuration does not define a metrics_whitelist, so the code below couldn't set it
+if [ -n "${COLLECTOR_JOLOKIA_METRICS__WHITELIST}" ]; then
+	echo "metrics_whitelist = ${COLLECTOR_JOLOKIA_METRICS__WHITELIST}" >> /opt/netuitive-agent/conf/collectors/JolokiaCollector.conf
+fi
+
+# The default Jolokia collector configuration has no rewrite section
+if [ -n "${COLLECTOR_SECTION_JOLOKIA_REWRITE}" ]; then
+  echo "\n[rewrite]" >> /opt/netuitive-agent/conf/collectors/JolokiaCollector.conf
+  rewrite_rules=($(echo ${COLLECTOR_SECTION_JOLOKIA_REWRITE} | tr "%" "\n"))
+  for rule in "${rewrite_rules[@]}"; do
+    echo "${rule}" >> /opt/netuitive-agent/conf/collectors/JolokiaCollector.conf
+  done
+fi
+
 for v in `set -o posix; set | sed 's% %:#:%g'`; do
 	if [[ "${v}" == "COLLECTOR_"*  ]]; then
 
