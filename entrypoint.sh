@@ -63,11 +63,11 @@ if [ -n "${COLLECTOR_JOLOKIA_METRICS__BLACKLIST}" ]; then
 fi
 
 # The default Jolokia collector configuration has no rewrite section
-if [ -n "${COLLECTOR_JOLOKIA_SECTION_REWRITE}" ]; then
+if [ -n "${COLLECTORSECTION_JOLOKIA_REWRITE}" ]; then
   echo "Configuring REWRITE section of the Jolokia collector configuration"
 
   echo -e "\n[rewrite]" >> /opt/netuitive-agent/conf/collectors/JolokiaCollector.conf
-  rewrite_rules=($(echo ${COLLECTOR_JOLOKIA_SECTION_REWRITE} | tr "%" "\n"))
+  rewrite_rules=($(echo ${COLLECTORSECTION_JOLOKIA_REWRITE} | tr "%" "\n"))
   for rule in "${rewrite_rules[@]}"; do
     echo "${rule}" >> /opt/netuitive-agent/conf/collectors/JolokiaCollector.conf
   done
