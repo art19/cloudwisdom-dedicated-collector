@@ -108,4 +108,4 @@ echo "Starting Services..."
 export SENSORS_LIB=/opt/netuitive-agent/embedded/lib/libsensors.so
 /opt/netuitive-agent/embedded/bin/python /opt/netuitive-agent/bin/netuitive-agent --foreground --configfile /opt/netuitive-agent/conf/netuitive-agent.conf&
 
-/opt/netuitive-agent/embedded/bin/netuitive-statsd --foreground --configfile /opt/netuitive-agent/conf/netuitive-agent.conf start
+/opt/netuitive-agent/embedded/bin/netuitive-statsd --foreground --configfile /opt/netuitive-agent/conf/netuitive-agent.conf --nolog start
