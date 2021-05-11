@@ -98,14 +98,12 @@ test $(grep -c "ElementType" /opt/netuitive-agent/embedded/lib/python2.7/site-pa
      sed -i "s/self.element = netuitive.Element(/self.element = netuitive.Element(\n                ElementType=\"$ELEMENT_TYPE\",/" /opt/netuitive-agent/embedded/lib/python2.7/site-packages/diamond/handler/netuitive_handler.py && \
 		 rm -f /opt/netuitive-agent/embedded/lib/python2.7/site-packages/diamond/handler/netuitive_handler.pyc /opt/netuitive-agent/embedded/lib/python2.7/site-packages/diamond/handler/netuitive_handler.pyo
 
+# netuitive-statsd logs to this file at all times, aside from sending its logs to stdout. Hence, we don't need the log file at all.
+ln -sf /dev/null /opt/netuitive-agent/log/netuitive-statsd.log
+
 # The rotate file hander does not really work with streams
 # ln -sf /proc/1/fd/1 /opt/netuitive-agent/log/netuitive-agent.log
-# ln -sf /proc/1/fd/1 /opt/netuitive-agent/log/netuitive-statsd.log
 # ln -sf /proc/1/fd/1 /opt/netuitive-agent/log/supervisord.log
 
 echo "Starting Services..."
-
-export SENSORS_LIB=/opt/netuitive-agent/embedded/lib/libsensors.so
-/opt/netuitive-agent/embedded/bin/python /opt/netuitive-agent/bin/netuitive-agent --foreground --configfile /opt/netuitive-agent/conf/netuitive-agent.conf&
-
-/opt/netuitive-agent/embedded/bin/netuitive-statsd --foreground --configfile /opt/netuitive-agent/conf/netuitive-agent.conf --nolog start
+exec /opt/netuitive-agent/bin/supervisord --configuration /opt/netuitive-agent/conf/supervisor.conf

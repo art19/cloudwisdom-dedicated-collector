@@ -2,11 +2,11 @@
 # DESCRIPTION:    Netuitive-agent in a container
 # MAINTAINER Netuitive <repos@netuitive.com>
 
-FROM      centos:6
+FROM      centos:8
 
 # environment variable defaults
-ENV APIKEY apikey
 ENV APIHOST api.app.netuitive.com
+ENV APIKEY apikey
 ENV DOCKER_HOSTNAME docker-hostname
 ENV ELEMENT_TYPE "SERVER"
 ENV FIP "127.0.0.2"
@@ -20,9 +20,7 @@ ENV LPRT 8125
 ENV TAGS ""
 
 RUN  yum -y update \
-  && rpm --import https://repos.app.netuitive.com/RPM-GPG-KEY-netuitive \
-  && rpm -ivh https://repos.app.netuitive.com/rpm/noarch/netuitive-repo-1-0.2.noarch.rpm \
-  && yum -y install netuitive-agent-0.8.0-10.el6 \
+  && rpm -ivh https://github.com/art19/omnibus-netuitive-agent/releases/download/v0.8.0.art19-1/netuitive-agent-0.8.0.art19-1.el6.x86_64.rpm \
   && /sbin/chkconfig netuitive-agent off \
   && yum clean all \
   && find /opt/netuitive-agent/collectors/ -type f -name "*.py" -print0 | xargs -0 sed -i 's/\/proc/\/host_proc/g' \
@@ -33,6 +31,8 @@ RUN  yum -y update \
 # startup script
 ADD entrypoint.sh /entrypoint.sh
 ADD netuitive-agent.conf /opt/netuitive-agent/conf/netuitive-agent.conf
+ADD supervisor.conf /opt/netuitive-agent/conf/supervisor.conf
+
 RUN chmod +x /entrypoint.sh
 
 VOLUME ["/opt/netuitive-agent/conf/"]
