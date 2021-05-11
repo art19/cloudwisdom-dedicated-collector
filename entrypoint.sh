@@ -62,6 +62,11 @@ if [ -n "${COLLECTOR_JOLOKIA_METRICS__BLACKLIST}" ]; then
 	echo "metrics_blacklist = ${COLLECTOR_JOLOKIA_METRICS__BLACKLIST}" >> /opt/netuitive-agent/conf/collectors/JolokiaCollector.conf
 fi
 
+if [ -n "${COLLECTOR_JOLOKIA_DOMAINS}" ]; then
+	echo "" >> /opt/netuitive-agent/conf/collectors/JolokiaCollector.conf
+	echo "domains = ${COLLECTOR_JOLOKIA_DOMAINS}" >> /opt/netuitive-agent/conf/collectors/JolokiaCollector.conf
+fi
+
 # The default Jolokia collector configuration has no rewrite section
 if [ -n "${COLLECTORSECTION_JOLOKIA_REWRITE}" ]; then
   echo "Configuring REWRITE section of the Jolokia collector configuration"
