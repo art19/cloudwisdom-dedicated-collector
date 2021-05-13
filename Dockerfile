@@ -20,6 +20,7 @@ ENV LPRT 8125
 ENV TAGS ""
 
 RUN  yum -y update \
+  && yum install -y net-tools \
   && rpm -ivh https://github.com/art19/omnibus-netuitive-agent/releases/download/v0.8.0.art19-1/netuitive-agent-0.8.0.art19-1.el6.x86_64.rpm \
   && /sbin/chkconfig netuitive-agent off \
   && yum clean all \
