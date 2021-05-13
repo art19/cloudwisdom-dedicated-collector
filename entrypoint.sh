@@ -51,12 +51,39 @@ if [[ ! $USE_LOCAL_CONFIG ]]; then
 
 fi
 
+# The default Jolokia collector configuration does not define a metrics_whitelist, so the code below couldn't set it
+if [ -n "${COLLECTOR_JOLOKIA_METRICS__WHITELIST}" ]; then
+	echo "" >> /opt/netuitive-agent/conf/collectors/JolokiaCollector.conf
+	echo "metrics_whitelist = ${COLLECTOR_JOLOKIA_METRICS__WHITELIST}" >> /opt/netuitive-agent/conf/collectors/JolokiaCollector.conf
+fi
+
+if [ -n "${COLLECTOR_JOLOKIA_METRICS__BLACKLIST}" ]; then
+	echo "" >> /opt/netuitive-agent/conf/collectors/JolokiaCollector.conf
+	echo "metrics_blacklist = ${COLLECTOR_JOLOKIA_METRICS__BLACKLIST}" >> /opt/netuitive-agent/conf/collectors/JolokiaCollector.conf
+fi
+
+if [ -n "${COLLECTOR_JOLOKIA_DOMAINS}" ]; then
+	echo "" >> /opt/netuitive-agent/conf/collectors/JolokiaCollector.conf
+	echo "domains = ${COLLECTOR_JOLOKIA_DOMAINS}" >> /opt/netuitive-agent/conf/collectors/JolokiaCollector.conf
+fi
+
+# The default Jolokia collector configuration has no rewrite section
+if [ -n "${COLLECTORSECTION_JOLOKIA_REWRITE}" ]; then
+  echo "Configuring REWRITE section of the Jolokia collector configuration"
+
+  echo -e "\n[rewrite]" >> /opt/netuitive-agent/conf/collectors/JolokiaCollector.conf
+  rewrite_rules=($(echo ${COLLECTORSECTION_JOLOKIA_REWRITE} | tr "%" "\n"))
+  for rule in "${rewrite_rules[@]}"; do
+    echo "${rule}" >> /opt/netuitive-agent/conf/collectors/JolokiaCollector.conf
+  done
+fi
+
 for v in `set -o posix; set | sed 's% %:#:%g'`; do
 	if [[ "${v}" == "COLLECTOR_"*  ]]; then
 
 		FILE=`echo "${COLLECTORS}" | grep -i "^$(echo "${v}" | sed 's%^COLLECTOR_%%;s%_.*%%' | tr 'A-Z' 'a-z')$"`
-		KEY=`echo "${v}" | sed 's%=.*%%;s%__%##%g;s%.*_%%;s%##%_%g' | tr 'A-Z' 'a-z'`
-		VAL=`echo "${v}" | sed "s%.*=%%;s%[']%%g"`
+		KEY=$(echo "${v}" | sed 's%=.*%%;s%__%##%g;s%.*_%%;s%##%_%g' | tr 'A-Z' 'a-z')
+		VAL=$(echo "${v}" | sed  "s%.*=%%;s%[']%%g;s%\\\%\\\\\\\\\\\%g")
 
 		[ "${VAL}" == "true" ] && VAL=True
 		[ "${VAL}" == "false" ] && VAL=False
@@ -71,13 +98,12 @@ test $(grep -c "ElementType" /opt/netuitive-agent/embedded/lib/python2.7/site-pa
      sed -i "s/self.element = netuitive.Element(/self.element = netuitive.Element(\n                ElementType=\"$ELEMENT_TYPE\",/" /opt/netuitive-agent/embedded/lib/python2.7/site-packages/diamond/handler/netuitive_handler.py && \
 		 rm -f /opt/netuitive-agent/embedded/lib/python2.7/site-packages/diamond/handler/netuitive_handler.pyc /opt/netuitive-agent/embedded/lib/python2.7/site-packages/diamond/handler/netuitive_handler.pyo
 
-ln -sf /proc/1/fd/1 /opt/netuitive-agent/log/netuitive-agent.log
-ln -sf /proc/1/fd/1 /opt/netuitive-agent/log/netuitive-statsd.log
-ln -sf /proc/1/fd/1 /opt/netuitive-agent/log/supervisord.log
+# netuitive-statsd logs to this file at all times, aside from sending its logs to stdout. Hence, we don't need the log file at all.
+ln -sf /dev/null /opt/netuitive-agent/log/netuitive-statsd.log
+
+# The rotate file hander does not really work with streams
+# ln -sf /proc/1/fd/1 /opt/netuitive-agent/log/netuitive-agent.log
+# ln -sf /proc/1/fd/1 /opt/netuitive-agent/log/supervisord.log
 
 echo "Starting Services..."
-
-export SENSORS_LIB=/opt/netuitive-agent/embedded/lib/libsensors.so
-/opt/netuitive-agent/embedded/bin/python /opt/netuitive-agent/bin/netuitive-agent --foreground --configfile /opt/netuitive-agent/conf/netuitive-agent.conf&
-
-/opt/netuitive-agent/embedded/bin/netuitive-statsd --foreground --configfile /opt/netuitive-agent/conf/netuitive-agent.conf start
+exec /opt/netuitive-agent/bin/supervisord --configuration /opt/netuitive-agent/conf/supervisor.conf
